@@ -1,0 +1,47 @@
+# Axolotl QLoRA config -- higher rank (Run 3)
+# Same as qwen_qlora.yml but with r=32 for higher capacity
+#
+# Usage: accelerate launch -m axolotl.cli.train configs/qwen_qlora_r32.yml
+
+base_model: Qwen/Qwen2.5-7B-Instruct
+model_type: AutoModelForCausalLM
+tokenizer_type: AutoTokenizer
+trust_remote_code: true
+
+load_in_4bit: true
+adapter: qlora
+lora_r: 32
+lora_alpha: 64
+lora_dropout: 0.1
+lora_target_linear: true
+
+datasets:
+  - path: train_combined.jsonl
+    type: sharegpt
+    conversation: chatml
+
+val_set_size: 0
+sequence_len: 2048
+micro_batch_size: 4
+gradient_accumulation_steps: 8
+num_epochs: 3
+learning_rate: 2.0e-4
+optimizer: adamw_bnb_8bit
+weight_decay: 0.01
+lr_scheduler: linear
+warmup_steps: 10
+
+output_dir: ./output_r32
+logging_steps: 5
+save_steps: 50
+save_total_limit: 3
+eval_steps: 50
+
+bf16: auto
+tf32: true
+gradient_checkpointing: true
+flash_attention: true
+
+chat_template: chatml
+special_tokens:
+  pad_token: "<|endoftext|>"

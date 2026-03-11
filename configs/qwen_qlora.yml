@@ -1,0 +1,60 @@
+# Axolotl QLoRA config for Qwen2.5-7B-Instruct hypothesis generation
+# Run 1: train_ours_only.jsonl | Run 2: train_combined.jsonl
+#
+# Usage (Colab Pro):
+#   accelerate launch -m axolotl.cli.train configs/qwen_qlora.yml
+#
+# Override dataset per run:
+#   accelerate launch -m axolotl.cli.train configs/qwen_qlora.yml \
+#     --datasets.0.path=/content/drive/MyDrive/training/prepared/train_combined.jsonl
+
+base_model: Qwen/Qwen2.5-7B-Instruct
+model_type: AutoModelForCausalLM
+tokenizer_type: AutoTokenizer
+trust_remote_code: true
+
+# QLoRA config
+load_in_4bit: true
+adapter: qlora
+lora_r: 16
+lora_alpha: 32
+lora_dropout: 0.1
+lora_target_linear: true
+
+# Dataset
+datasets:
+  - path: train_ours_only.jsonl
+    type: sharegpt
+    conversation: chatml
+
+# Validation
+val_set_size: 0  # We handle splits ourselves -- pass val data separately if needed
+
+# Training
+sequence_len: 2048
+micro_batch_size: 4
+gradient_accumulation_steps: 8  # effective batch size = 32
+num_epochs: 3
+learning_rate: 2.0e-4
+optimizer: adamw_bnb_8bit
+weight_decay: 0.01
+lr_scheduler: linear
+warmup_steps: 10
+
+# Saving and logging
+output_dir: ./output
+logging_steps: 5
+save_steps: 50
+save_total_limit: 3
+eval_steps: 50
+
+# Performance
+bf16: auto
+tf32: true
+gradient_checkpointing: true
+flash_attention: true
+
+# Chat template
+chat_template: chatml
+special_tokens:
+  pad_token: "<|endoftext|>"

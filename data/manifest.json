@@ -1,0 +1,15 @@
+{
+  "seed": 42,
+  "our_total": 1389,
+  "our_train": 1180,
+  "our_val": 102,
+  "our_test": 107,
+  "hypogen_train": 5478,
+  "hypogen_test": 50,
+  "combined_train": 6658,
+  "balanced_train": 4720,
+  "train_pct": 0.85,
+  "val_pct": 0.075,
+  "max_ratio": 0,
+  "oversample_ours": 1.0
+}
